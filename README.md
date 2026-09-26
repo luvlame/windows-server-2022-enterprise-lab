@@ -9,7 +9,7 @@ Users
 Groups
 Delegation
 
-!(image002.png)
+image002.png 
 
 
 02 — Group Policy & Security
