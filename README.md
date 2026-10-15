@@ -1,123 +1,104 @@
-# Nmap Scan Techniques — Penetration Testing Lab
 
-A hands-on penetration testing lab comparing four Nmap scan techniques against a deliberately vulnerable target (Metasploitable 2) in an isolated virtual network.
+01 — Active Directory & Identity
 
-## Objective
+AD DS
+OU structure
+Users
+Groups
+Delegation
+AD DS ;
+OU structure;
+Users;
+Groups;
+Delegation;
 
-Demonstrate how different Nmap scans interact with a target, what information each returns, and when to use each technique during the reconnaissance phase of a penetration test.
-
-## Lab Environment
-
-| Role | System | IP Address |
-|------|--------|------------|
-| Attacker | Kali Linux | 192.168.56.1 |
-| Target | Metasploitable 2 | 192.168.56.101 |
-| Network | Host-Only (isolated) | — |
-
-**Tools used:** Nmap 7.95, Oracle VirtualBox
-
-## Pre-Scan: Connectivity Test
-
-Before scanning, connectivity between Kali and Metasploitable 2 was verified using `ping` to confirm both VMs were on the same network and reachable.
+![1](image002.png)
 
 
-ping 192.168.56.101
-Result: 0% packet loss — target reachable, scans can proceed.
+02 — Group Policy & Security
 
-1
+Password policy
+Login banner
+User restrictions
+Security baselines
+Password policy;
+Login banner;
+User restrictions;
+Security baselines;
 
-Scan 1: Stealth Scan (SYN Scan)
-Command:
+![1](image065.png)
 
-bash
-nmap -sS 192.168.56.101
-How it works: Sends a SYN packet to each port. If the port is open, the target replies with SYN-ACK. The scan never completes the three-way handshake — making it faster and harder to detect than a full connect scan.
+03 — File Services & DFS
 
-Key findings:
+HR
+IT
+Sales
+Shared folders
+DFS namespace
+HR;
+IT;
+Sales;
+Shared folders;
+DFS namespace;
 
-977 closed TCP ports
+![1](image009.png)
+![1](image083.png)
 
-23 open ports identified, including:
+04 — Remote Access
 
-21/tcp — ftp
+RDS
+RRAS
+VPN
+Remote access policies
+RDS;
+RRAS;
+VPN;
+Remote access policies;
 
-22/tcp — ssh
+![1](image002.png)
 
-23/tcp — telnet
+05 — Server Hardening
 
-25/tcp — smtp
+Unnecessary services
+Microsoft Security Hardening Toolkit
+Event Viewer
+Task Manager monitoring
+Unnecessary services;
+Microsoft Security Hardening Toolkit;
+Event Viewer;
+Task Manager monitoring;
 
-80/tcp — http
+![1](image105.png)
 
-139/tcp — netbios-ssn
+06 — Backup & Recovery
 
-445/tcp — microsoft-ds
+Windows Server Backup
+Full server backup
+Disaster recovery
+Windows Server Backup;
+Full server backup;
+Disaster recovery;
 
-3306/tcp — mysql
+![1](image121.png)
 
-5432/tcp — postgresql
+07 — Certificate Services
 
-5900/tcp — vnc
+Certificate Services
+Certificate store
+PKI
+Certificate Services;
+Certificate store;
+PKI;
 
-6667/tcp — irc
+![1](image131.png)
 
-8180/tcp — unknown
+08 — Cloud Integration
 
-Result: Scan completed in 0.98 seconds — fast and rich with service information.
+Azure AD Connect
+TLS 1.2 configuration
+Troubleshooting
+Azure AD Connect;
+TLS 1.2 configuration;
+Troubleshooting;
 
-2
-
-Scan 2: TCP Connect Scan
-Command:
-
-bash
-nmap -sT 192.168.56.101
-How it works: Completes the full TCP three-way handshake with each target port. More reliable than a SYN scan, but noisier — connection attempts are logged by the target.
-
-Result: Similar port/service output to the stealth scan but more detectable on the target's logs.
-
-https://images/tcp-connect-scan.png
-
-Scan 3: UDP Scan
-Command:
-
-bash
-nmap -sU 192.168.56.101
-How it works: Sends UDP packets instead of TCP. Since UDP is connectionless (no handshake), results are less clear — a lack of response may mean open or filtered.
-
-Key findings:
-
-952 closed UDP ports
-
-44 open|filtered UDP ports
-
-Open services identified:
-
-53/udp — domain
-
-111/udp — rpcbind
-
-137/udp — netbios-ns
-
-2049/udp — nfs
-
-Result: Scan took 1027 seconds (~17 minutes) — significantly slower and less reliable than TCP scans.
-
-3
-
-Scan 4: ACK Scan
-Command:
-
-bash
-nmap -sA 192.168.56.101
-How it works: Sends ACK packets to map firewall rules. It does not identify open/closed ports — instead it classifies ports as filtered or unfiltered.
-
-Key findings:
-
-1000 scanned ports reported as unfiltered (reset)
-
-No ports marked as filtered
-
-Result: No firewall filtering observed — traffic is passing freely between the VMs.
-
-4
+![1](image133.png)
