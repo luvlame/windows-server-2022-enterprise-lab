@@ -1,75 +1,123 @@
-# windows-server-2022-enterprise-lab
-Designed and administered a simulated enterprise Windows Server environment focused on centralized identity management, access control, file services, remote access, security hardening and disaster recovery.
+# Nmap Scan Techniques — Penetration Testing Lab
 
-01 — Active Directory & Identity
+A hands-on penetration testing lab comparing four Nmap scan techniques against a deliberately vulnerable target (Metasploitable 2) in an isolated virtual network.
 
-AD DS ;
-OU structure;
-Users;
-Groups;
-Delegation;
+## Objective
 
-![1](image002.png)
+Demonstrate how different Nmap scans interact with a target, what information each returns, and when to use each technique during the reconnaissance phase of a penetration test.
+
+## Lab Environment
+
+| Role | System | IP Address |
+|------|--------|------------|
+| Attacker | Kali Linux | 192.168.56.1 |
+| Target | Metasploitable 2 | 192.168.56.101 |
+| Network | Host-Only (isolated) | — |
+
+**Tools used:** Nmap 7.95, Oracle VirtualBox
+
+## Pre-Scan: Connectivity Test
+
+Before scanning, connectivity between Kali and Metasploitable 2 was verified using `ping` to confirm both VMs were on the same network and reachable.
 
 
-02 — Group Policy & Security
+ping 192.168.56.101
+Result: 0% packet loss — target reachable, scans can proceed.
 
-Password policy;
-Login banner;
-User restrictions;
-Security baselines;
+1
 
-![1](image065.png)
+Scan 1: Stealth Scan (SYN Scan)
+Command:
 
-03 — File Services & DFS
+bash
+nmap -sS 192.168.56.101
+How it works: Sends a SYN packet to each port. If the port is open, the target replies with SYN-ACK. The scan never completes the three-way handshake — making it faster and harder to detect than a full connect scan.
 
-HR;
-IT;
-Sales;
-Shared folders;
-DFS namespace;
+Key findings:
 
-![1](image009.png)
-![1](image083.png)
+977 closed TCP ports
 
-04 — Remote Access
+23 open ports identified, including:
 
-RDS;
-RRAS;
-VPN;
-Remote access policies;
+21/tcp — ftp
 
-![1](image002.png)
+22/tcp — ssh
 
-05 — Server Hardening
+23/tcp — telnet
 
-Unnecessary services;
-Microsoft Security Hardening Toolkit;
-Event Viewer;
-Task Manager monitoring;
+25/tcp — smtp
 
-![1](image105.png)
+80/tcp — http
 
-06 — Backup & Recovery
+139/tcp — netbios-ssn
 
-Windows Server Backup;
-Full server backup;
-Disaster recovery;
+445/tcp — microsoft-ds
 
-![1](image121.png)
+3306/tcp — mysql
 
-07 — Certificate Services
+5432/tcp — postgresql
 
-Certificate Services;
-Certificate store;
-PKI;
+5900/tcp — vnc
 
-![1](image131.png)
+6667/tcp — irc
 
-08 — Cloud Integration
+8180/tcp — unknown
 
-Azure AD Connect;
-TLS 1.2 configuration;
-Troubleshooting;
+Result: Scan completed in 0.98 seconds — fast and rich with service information.
 
-![1](image133.png)
+2
+
+Scan 2: TCP Connect Scan
+Command:
+
+bash
+nmap -sT 192.168.56.101
+How it works: Completes the full TCP three-way handshake with each target port. More reliable than a SYN scan, but noisier — connection attempts are logged by the target.
+
+Result: Similar port/service output to the stealth scan but more detectable on the target's logs.
+
+https://images/tcp-connect-scan.png
+
+Scan 3: UDP Scan
+Command:
+
+bash
+nmap -sU 192.168.56.101
+How it works: Sends UDP packets instead of TCP. Since UDP is connectionless (no handshake), results are less clear — a lack of response may mean open or filtered.
+
+Key findings:
+
+952 closed UDP ports
+
+44 open|filtered UDP ports
+
+Open services identified:
+
+53/udp — domain
+
+111/udp — rpcbind
+
+137/udp — netbios-ns
+
+2049/udp — nfs
+
+Result: Scan took 1027 seconds (~17 minutes) — significantly slower and less reliable than TCP scans.
+
+3
+
+Scan 4: ACK Scan
+Command:
+
+bash
+nmap -sA 192.168.56.101
+How it works: Sends ACK packets to map firewall rules. It does not identify open/closed ports — instead it classifies ports as filtered or unfiltered.
+
+Key findings:
+
+1000 scanned ports reported as unfiltered (reset)
+
+No ports marked as filtered
+
+Result: No firewall filtering observed — traffic is passing freely between the VMs.
+
+4
